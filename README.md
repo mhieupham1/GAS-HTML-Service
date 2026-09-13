@@ -117,7 +117,7 @@ Node.js is used only for local checks; the deployed Web App does not require Nod
 npm test
 ```
 
-The current tests were written against an earlier internal function layout and DOM bootstrap. They must be synchronized with the current `Code.gs` and `Index.html` before the command can be treated as a passing release gate.
+The suite covers backend aggregation and validation, the expected sample-data metrics, frontend rendering and filters, empty and error states, and Google Charts integration behavior.
 
 ## Troubleshooting
 

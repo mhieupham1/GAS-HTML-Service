@@ -4,39 +4,79 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const code = fs.readFileSync(path.resolve(__dirname, '..', 'Code.gs'), 'utf8');
-const context = { console };
-vm.createContext(context);
-vm.runInContext(code, context);
+const ROOT = path.resolve(__dirname, '..');
+const code = fs.readFileSync(path.join(ROOT, 'Code.gs'), 'utf8');
+const HEADERS = [
+  'ticket_id',
+  'created_at',
+  'service',
+  'category',
+  'priority',
+  'status',
+  'assignee_team',
+  'resolved_at',
+  'resolution_hours',
+  'sla_met'
+];
 
 function plain(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function ticket(ticketId, createdAt, service, priority, status, resolvedAt, resolutionHours, slaMet) {
+function parseCsv(file) {
+  return fs.readFileSync(file, 'utf8')
+    .trim()
+    .split(/\r?\n/)
+    .map((line) => line.split(','));
+}
+
+function createSpreadsheet(values, timeZone = 'Asia/Ho_Chi_Minh') {
   return {
-    ticketId,
-    createdAt,
-    service,
-    category: 'Bug',
-    priority,
-    status,
-    assigneeTeam: 'Backend',
-    resolvedAt,
-    resolutionHours,
-    slaMet
+    getSheetByName(name) {
+      return name === 'Tickets'
+        ? { getDataRange: () => ({ getValues: () => values }) }
+        : null;
+    },
+    getSpreadsheetTimeZone() {
+      return timeZone;
+    }
   };
 }
 
-const records = [
-  ticket('INC-001', '2026-09-10', 'Payment API', 'Critical', 'Open', '', '', ''),
-  ticket('INC-002', '2026-09-10', 'Mobile App', 'High', 'Resolved', '2026-09-10', 4, 'Yes'),
-  ticket('INC-003', '2026-09-11', 'Payment API', 'Medium', 'Resolved', '2026-09-12', 20, 'No'),
-  ticket('INC-004', '2026-09-12', 'Customer Portal', 'Low', 'In Progress', '', '', '')
+function createContext(spreadsheet) {
+  const context = {
+    console,
+    Date,
+    SpreadsheetApp: {
+      getActiveSpreadsheet: () => spreadsheet
+    },
+    Session: {
+      getScriptTimeZone: () => 'UTC'
+    },
+    Utilities: {
+      formatDate(date, _timeZone, pattern) {
+        assert.equal(pattern, 'yyyy-MM-dd');
+        return date.toISOString().slice(0, 10);
+      }
+    }
+  };
+
+  vm.createContext(context);
+  vm.runInContext(code, context);
+  return context;
+}
+
+const SMALL_DATASET = [
+  HEADERS,
+  ['INC-001', '2026-09-10', 'Payment API', 'Incident', 'Critical', 'Open', 'Backend', '', '', ''],
+  ['INC-002', '2026-09-10', 'Mobile App', 'Bug', 'High', 'Resolved', 'Mobile', '2026-09-10', 4, 'Yes'],
+  ['INC-003', '2026-09-11', 'Payment API', 'Bug', 'Medium', 'Resolved', 'Backend', '2026-09-12', 20, 'No'],
+  ['INC-004', '2026-09-12', 'Customer Portal', 'Access', 'Low', 'In Progress', 'Support', '', '', '']
 ];
 
-test('buildDashboardData_ calculates KPI and urgent tickets', () => {
-  const result = plain(context.buildDashboardData_(records, {}, 0));
+test('getDashboardData calculates KPIs, series, options, and urgent tickets', () => {
+  const context = createContext(createSpreadsheet(SMALL_DATASET));
+  const result = plain(context.getDashboardData({}));
 
   assert.deepEqual(result.kpis, {
     total: 4,
@@ -44,8 +84,11 @@ test('buildDashboardData_ calculates KPI and urgent tickets', () => {
     slaRate: 50,
     avgResolutionHours: 12
   });
-  assert.equal(result.urgentTickets.length, 1);
-  assert.equal(result.urgentTickets[0].ticketId, 'INC-001');
+  assert.deepEqual(result.trends, [
+    { label: '2026-09-10', value: 2 },
+    { label: '2026-09-11', value: 1 },
+    { label: '2026-09-12', value: 1 }
+  ]);
   assert.deepEqual(result.byService, [
     { label: 'Payment API', value: 2 },
     { label: 'Customer Portal', value: 1 },
@@ -56,26 +99,55 @@ test('buildDashboardData_ calculates KPI and urgent tickets', () => {
     { label: 'In Progress', value: 1 },
     { label: 'Resolved', value: 2 }
   ]);
+  assert.deepEqual(result.options, {
+    services: ['Customer Portal', 'Mobile App', 'Payment API'],
+    priorities: ['Critical', 'High', 'Medium', 'Low']
+  });
+  assert.equal(result.urgentTickets.length, 1);
+  assert.equal(result.urgentTickets[0].ticketId, 'INC-001');
+  assert.equal(result.meta.periodStart, '2026-09-10');
+  assert.equal(result.meta.periodEnd, '2026-09-12');
+  assert.equal(result.meta.filteredCount, 4);
+  assert.equal(result.meta.skippedRows, 0);
+  assert.equal(result.meta.isSampleData, true);
+  assert.ok(Number.isFinite(Date.parse(result.meta.generatedAt)));
 });
 
-test('buildDashboardData_ applies inclusive date, service and priority filters', () => {
-  const result = plain(context.buildDashboardData_(records, {
+test('getDashboardData matches all expected metrics for sample-data.csv', () => {
+  const values = parseCsv(path.join(ROOT, 'sample-data.csv'));
+  const context = createContext(createSpreadsheet(values));
+  const result = plain(context.getDashboardData({}));
+
+  assert.deepEqual(result.kpis, {
+    total: 40,
+    open: 16,
+    slaRate: 79.2,
+    avgResolutionHours: 12.8
+  });
+  assert.deepEqual(result.byService[0], { label: 'Payment API', value: 14 });
+  assert.equal(result.urgentTickets.length, 10);
+  assert.equal(result.meta.skippedRows, 0);
+});
+
+test('filters are exact and date boundaries are inclusive', () => {
+  const context = createContext(createSpreadsheet(SMALL_DATASET));
+  const result = plain(context.getDashboardData({
     startDate: '2026-09-11',
     endDate: '2026-09-12',
     service: 'Payment API',
     priority: 'Medium'
-  }, 0));
+  }));
 
   assert.equal(result.kpis.total, 1);
+  assert.deepEqual(result.trends, [{ label: '2026-09-11', value: 1 }]);
   assert.equal(result.meta.periodStart, '2026-09-11');
   assert.equal(result.meta.periodEnd, '2026-09-12');
-  assert.deepEqual(result.trends, [{ label: '2026-09-11', value: 1 }]);
   assert.deepEqual(result.options.services, ['Customer Portal', 'Mobile App', 'Payment API']);
-  assert.deepEqual(result.options.priorities, ['Critical', 'High', 'Medium', 'Low']);
 });
 
-test('buildDashboardData_ returns meaningful empty metrics', () => {
-  const result = plain(context.buildDashboardData_(records, { service: 'Unknown' }, 2));
+test('a filter with no matches returns meaningful empty metrics', () => {
+  const context = createContext(createSpreadsheet(SMALL_DATASET));
+  const result = plain(context.getDashboardData({ service: 'Unknown Service' }));
 
   assert.deepEqual(result.kpis, {
     total: 0,
@@ -84,89 +156,94 @@ test('buildDashboardData_ returns meaningful empty metrics', () => {
     avgResolutionHours: null
   });
   assert.deepEqual(result.trends, []);
+  assert.deepEqual(result.byService, []);
+  assert.deepEqual(result.byStatus, [
+    { label: 'Open', value: 0 },
+    { label: 'In Progress', value: 0 },
+    { label: 'Resolved', value: 0 }
+  ]);
+  assert.deepEqual(result.urgentTickets, []);
   assert.equal(result.meta.filteredCount, 0);
-  assert.equal(result.meta.skippedRows, 2);
 });
 
-test('normalizeRows_ converts valid sheet rows and skips malformed rows', () => {
+test('invalid ticket rows are skipped and reported', () => {
   const values = [
-    [
-      'ticket_id', 'created_at', 'service', 'category', 'priority',
-      'status', 'assignee_team', 'resolved_at', 'resolution_hours', 'sla_met'
-    ],
+    HEADERS,
     ['INC-101', '2026-09-01', 'Payment API', 'Bug', 'High', 'Resolved', 'Backend', '2026-09-01', 6, 'Yes'],
-    ['INC-102', 'bad-date', 'Mobile App', 'Bug', 'Low', 'Open', 'Frontend', '', '', ''],
-    ['INC-103', '2026-09-02', 'Mobile App', 'Access', 'Medium', 'Open', 'Frontend', '', '', '']
+    ['INC-102', 'bad-date', 'Mobile App', 'Bug', 'Low', 'Open', 'Mobile', '', '', ''],
+    ['INC-103', '2026-09-02', 'Mobile App', 'Access', 'Medium', 'Open', 'Support', '', '', ''],
+    ['INC-104', '2026-09-03', 'Mobile App', 'Bug', 'Low', 'Open', 'Mobile', '', 5, '']
   ];
+  const context = createContext(createSpreadsheet(values));
+  const result = plain(context.getDashboardData({}));
 
-  const result = plain(context.normalizeRows_(values));
-
-  assert.equal(result.skippedRows, 1);
-  assert.deepEqual(result.records, [
-    {
-      ticketId: 'INC-101',
-      createdAt: '2026-09-01',
-      service: 'Payment API',
-      category: 'Bug',
-      priority: 'High',
-      status: 'Resolved',
-      assigneeTeam: 'Backend',
-      resolvedAt: '2026-09-01',
-      resolutionHours: 6,
-      slaMet: 'Yes'
-    },
-    {
-      ticketId: 'INC-103',
-      createdAt: '2026-09-02',
-      service: 'Mobile App',
-      category: 'Access',
-      priority: 'Medium',
-      status: 'Open',
-      assigneeTeam: 'Frontend',
-      resolvedAt: '',
-      resolutionHours: null,
-      slaMet: ''
-    }
+  assert.equal(result.kpis.total, 2);
+  assert.equal(result.meta.skippedRows, 2);
+  assert.deepEqual(result.trends, [
+    { label: '2026-09-01', value: 1 },
+    { label: '2026-09-02', value: 1 }
   ]);
 });
 
-test('normalizeRows_ reports all missing required columns', () => {
-  assert.throws(
-    () => context.normalizeRows_([['ticket_id', 'created_at']]),
-    /Thiếu cột bắt buộc: service, category, priority, status, assignee_team, resolved_at, resolution_hours, sla_met/
-  );
-});
-
-test('readTickets_ reports a missing Tickets sheet', () => {
-  context.SpreadsheetApp = {
-    getActiveSpreadsheet: () => ({ getSheetByName: () => null })
-  };
-
-  assert.throws(
-    () => context.readTickets_(),
-    /Không tìm thấy sheet "Tickets"/
-  );
-});
-
-test('getDashboardData reads and aggregates the active Tickets sheet', () => {
+test('Google Sheets Date values are normalized to YYYY-MM-DD', () => {
   const values = [
-    [
-      'ticket_id', 'created_at', 'service', 'category', 'priority',
-      'status', 'assignee_team', 'resolved_at', 'resolution_hours', 'sla_met'
-    ],
-    ['INC-201', '2026-09-13', 'Payment API', 'Bug', 'Critical', 'Open', 'Backend', '', '', '']
+    HEADERS,
+    ['INC-201', new Date('2026-09-13T00:00:00.000Z'), 'Payment API', 'Bug', 'Critical', 'Open', 'Backend', '', '', '']
   ];
-  context.SpreadsheetApp = {
-    getActiveSpreadsheet: () => ({
-      getSheetByName: (name) => name === 'Tickets' ? {
-        getDataRange: () => ({ getValues: () => values })
-      } : null
-    })
-  };
+  const context = createContext(createSpreadsheet(values, 'UTC'));
+  const result = plain(context.getDashboardData({}));
 
-  const result = plain(context.getDashboardData({ priority: 'Critical' }));
+  assert.deepEqual(result.trends, [{ label: '2026-09-13', value: 1 }]);
+  assert.equal(result.urgentTickets[0].createdAt, '2026-09-13');
+});
 
-  assert.equal(result.kpis.total, 1);
-  assert.equal(result.kpis.open, 1);
-  assert.equal(result.urgentTickets[0].ticketId, 'INC-201');
+test('invalid filters and date ranges return clear English errors', () => {
+  const context = createContext(createSpreadsheet(SMALL_DATASET));
+
+  assert.throws(
+    () => context.getDashboardData({ startDate: '2026-02-30' }),
+    /Start date is invalid\. Use the YYYY-MM-DD format\./
+  );
+  assert.throws(
+    () => context.getDashboardData({ startDate: '2026-09-12', endDate: '2026-09-11' }),
+    /The start date cannot be later than the end date\./
+  );
+});
+
+test('missing spreadsheet, sheet, header row, and columns return clear errors', async (t) => {
+  await t.test('active spreadsheet', () => {
+    const context = createContext(null);
+    assert.throws(
+      () => context.getDashboardData({}),
+      /No active spreadsheet was found\./
+    );
+  });
+
+  await t.test('Tickets sheet', () => {
+    const spreadsheet = {
+      getSheetByName: () => null,
+      getSpreadsheetTimeZone: () => 'UTC'
+    };
+    const context = createContext(spreadsheet);
+    assert.throws(
+      () => context.getDashboardData({}),
+      /The "Tickets" sheet was not found\./
+    );
+  });
+
+  await t.test('header row', () => {
+    const context = createContext(createSpreadsheet([]));
+    assert.throws(
+      () => context.getDashboardData({}),
+      /The "Tickets" sheet does not have a header row\./
+    );
+  });
+
+  await t.test('required columns', () => {
+    const context = createContext(createSpreadsheet([['ticket_id', 'created_at']]));
+    assert.throws(
+      () => context.getDashboardData({}),
+      /Missing required columns in the "Tickets" sheet: service, category, priority, status, assignee_team, resolved_at, resolution_hours, sla_met\./
+    );
+  });
 });
