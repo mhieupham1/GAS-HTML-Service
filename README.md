@@ -11,7 +11,7 @@ The included dataset contains 40 fictional tickets and no production or company 
 - A priority table for unresolved High and Critical tickets
 - Inclusive date-range, service, and priority filters
 - Loading, empty, validation, and backend-error states
-- Reporting period, data source, update time, sample-data notice, and skipped-row count
+- Reporting period, data source, report generation time, sample-data notice, and skipped-row count
 - Responsive layouts for desktop, tablet, and mobile screens
 
 ## Expected results

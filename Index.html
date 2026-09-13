@@ -614,9 +614,9 @@
             Track request volume, resolution progress, and service-level compliance to prioritize work effectively.
           </p>
         </div>
-        <div class="update" aria-label="Time of the latest data update">
-          <span>Last updated</span>
-          <strong id="last-updated">Not updated yet</strong>
+        <div class="update" aria-label="Time the dashboard report was generated">
+          <span>Generated at</span>
+          <strong id="generated-at">Not generated yet</strong>
         </div>
       </div>
       <p class="demo-note" id="demo-note" hidden>The data in this dashboard is for demonstration purposes only.</p>
@@ -814,7 +814,7 @@
         elements.dashboard = document.getElementById('dashboard-state');
         elements.reportDetails = document.getElementById('report-details');
         elements.liveStatus = document.getElementById('live-status');
-        elements.lastUpdated = document.getElementById('last-updated');
+        elements.generatedAt = document.getElementById('generated-at');
         elements.demoNote = document.getElementById('demo-note');
         elements.kpiTotal = document.getElementById('kpi-total');
         elements.kpiOpen = document.getElementById('kpi-open');
@@ -1047,7 +1047,7 @@
       }
 
       function renderMeta(meta) {
-        elements.lastUpdated.textContent = formatDateTime(meta.generatedAt);
+        elements.generatedAt.textContent = formatDateTime(meta.generatedAt);
         elements.reportPeriod.textContent = formatPeriod(meta.periodStart, meta.periodEnd);
         elements.skippedRows.textContent = integerFormatter.format(Number(meta.skippedRows) || 0);
         elements.demoNote.textContent = 'The data in this dashboard is for demonstration purposes only.';

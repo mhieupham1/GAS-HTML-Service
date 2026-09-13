@@ -241,6 +241,7 @@ test('initialization loads data and renders the current English dashboard', () =
   assert.equal(harness.getElement('loading-state').hidden, true);
   assert.equal(harness.getElement('demo-note').hidden, false);
   assert.equal(harness.getElement('skipped-rows').textContent, '0');
+  assert.notEqual(harness.getElement('generated-at').textContent, 'Not generated yet');
 });
 
 test('initialization renders filters, urgent tickets, and all three charts', () => {
