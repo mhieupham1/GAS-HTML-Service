@@ -1,0 +1,41 @@
+ticket_id,created_at,service,category,priority,status,assignee_team,resolved_at,resolution_hours,sla_met
+INC-001,2026-08-25,Customer Portal,Bug,High,Resolved,Frontend,2026-08-25,6,Yes
+INC-002,2026-08-27,Payment API,Performance,Critical,Open,Backend,,,
+INC-003,2026-08-26,Mobile App,Bug,Medium,Resolved,Frontend,2026-08-26,10,Yes
+INC-004,2026-08-26,Payment API,Access,High,In Progress,Backend,,,
+INC-005,2026-08-27,Payment API,Bug,Critical,Resolved,Backend,2026-08-27,3,Yes
+INC-006,2026-08-27,Customer Portal,Feature Request,Low,Resolved,Frontend,2026-08-29,30,Yes
+INC-007,2026-08-28,Mobile App,Performance,High,Open,Frontend,,,
+INC-008,2026-09-12,Payment API,Access,Medium,Resolved,Backend,2026-09-12,5,Yes
+INC-009,2026-08-29,Customer Portal,Bug,Critical,In Progress,Backend,,,
+INC-010,2026-08-29,Payment API,Performance,High,Resolved,Backend,2026-08-30,14,No
+INC-011,2026-08-30,Mobile App,Feature Request,Low,Resolved,Frontend,2026-09-01,32,Yes
+INC-012,2026-08-31,Payment API,Access,Medium,Open,Backend,,,
+INC-013,2026-08-31,Customer Portal,Performance,High,Resolved,Frontend,2026-08-31,7,Yes
+INC-014,2026-08-31,Payment API,Bug,Critical,In Progress,Backend,,,
+INC-015,2026-09-01,Mobile App,Bug,Medium,Resolved,Frontend,2026-09-02,19,Yes
+INC-016,2026-09-01,Payment API,Access,High,Resolved,Backend,2026-09-01,5,Yes
+INC-017,2026-09-02,Customer Portal,Feature Request,Low,Open,Frontend,,,
+INC-018,2026-09-04,Payment API,Performance,Critical,Resolved,Backend,2026-09-04,2,Yes
+INC-019,2026-09-03,Mobile App,Bug,High,In Progress,Frontend,,,
+INC-020,2026-09-03,Internal Network,Performance,Medium,Resolved,Infrastructure,2026-09-04,21,Yes
+INC-021,2026-09-04,Customer Portal,Access,High,Resolved,Backend,2026-09-05,11,No
+INC-022,2026-09-04,Payment API,Bug,Critical,Open,Backend,,,
+INC-023,2026-09-05,Customer Portal,Feature Request,Low,Resolved,Frontend,2026-09-07,28,Yes
+INC-024,2026-09-08,Internal Network,Access,Medium,In Progress,Infrastructure,,,
+INC-025,2026-09-06,Customer Portal,Bug,High,Resolved,Frontend,2026-09-06,4,Yes
+INC-026,2026-09-06,Payment API,Performance,Critical,Resolved,Backend,2026-09-06,6,No
+INC-027,2026-09-07,Mobile App,Bug,Medium,Open,Frontend,,,
+INC-028,2026-09-07,Internal Network,Access,High,Resolved,Infrastructure,2026-09-08,9,No
+INC-029,2026-09-08,Customer Portal,Performance,Critical,In Progress,Backend,,,
+INC-030,2026-09-08,Payment API,Bug,Medium,Resolved,Backend,2026-09-09,18,Yes
+INC-031,2026-09-09,Mobile App,Feature Request,Low,Resolved,Frontend,2026-09-10,25,Yes
+INC-032,2026-09-10,Internal Network,Performance,High,Open,Infrastructure,,,
+INC-033,2026-09-10,Customer Portal,Bug,Critical,Resolved,Backend,2026-09-10,3,Yes
+INC-034,2026-09-10,Payment API,Access,Medium,In Progress,Backend,,,
+INC-035,2026-09-11,Mobile App,Performance,High,Resolved,Frontend,2026-09-12,12,No
+INC-036,2026-09-11,Internal Network,Access,Low,Resolved,Infrastructure,2026-09-12,26,Yes
+INC-037,2026-09-12,Customer Portal,Feature Request,Medium,Open,Frontend,,,
+INC-038,2026-09-12,Payment API,Bug,Critical,Resolved,Backend,2026-09-12,4,Yes
+INC-039,2026-09-13,Mobile App,Bug,High,Resolved,Frontend,2026-09-13,7,Yes
+INC-040,2026-09-13,Internal Network,Performance,Critical,Open,Infrastructure,,,

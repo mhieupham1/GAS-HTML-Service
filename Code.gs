@@ -14,7 +14,7 @@ var REQUIRED_HEADERS = [
 var VALID_PRIORITIES = ['Critical', 'High', 'Medium', 'Low'];
 var VALID_STATUSES = ['Open', 'In Progress', 'Resolved'];
 // Set to true only when the Tickets sheet intentionally contains demonstration data.
-var IS_SAMPLE_DATA = false;
+var IS_SAMPLE_DATA = true;
 
 /**
  * Serves the dashboard UI from Index.html.
@@ -36,18 +36,18 @@ function doGet() {
 function getDashboardData(filters) {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   if (!spreadsheet) {
-    throw new Error('Không tìm thấy bảng tính đang hoạt động. Hãy liên kết dự án Apps Script với Google Sheet chứa dữ liệu.');
+    throw new Error('No active spreadsheet was found. Bind this Apps Script project to the Google Sheet containing the data.');
   }
 
   var sheet = spreadsheet.getSheetByName(TICKETS_SHEET_NAME);
 
   if (!sheet) {
-    throw new Error('Không tìm thấy trang tính "Tickets".');
+    throw new Error('The "Tickets" sheet was not found.');
   }
 
   var values = sheet.getDataRange().getValues();
   if (values.length === 0 || values[0].length === 0) {
-    throw new Error('Trang tính "Tickets" không có hàng tiêu đề.');
+    throw new Error('The "Tickets" sheet does not have a header row.');
   }
 
   var headerMap = buildHeaderMap_(values[0]);
@@ -108,7 +108,7 @@ function assertRequiredHeaders_(headerMap) {
   });
 
   if (missingHeaders.length > 0) {
-    throw new Error('Thiếu cột bắt buộc trong trang tính "Tickets": ' + missingHeaders.join(', ') + '.');
+    throw new Error('Missing required columns in the "Tickets" sheet: ' + missingHeaders.join(', ') + '.');
   }
 }
 
@@ -121,11 +121,11 @@ function assertRequiredHeaders_(headerMap) {
  */
 function normalizeFilters_(filters, timeZone) {
   var source = filters && typeof filters === 'object' ? filters : {};
-  var startDate = parseOptionalFilterDate_(source.startDate, 'Ngày bắt đầu', timeZone);
-  var endDate = parseOptionalFilterDate_(source.endDate, 'Ngày kết thúc', timeZone);
+  var startDate = parseOptionalFilterDate_(source.startDate, 'Start date', timeZone);
+  var endDate = parseOptionalFilterDate_(source.endDate, 'End date', timeZone);
 
   if (startDate && endDate && startDate > endDate) {
-    throw new Error('Ngày bắt đầu không được sau ngày kết thúc.');
+    throw new Error('The start date cannot be later than the end date.');
   }
 
   return {
@@ -151,7 +151,7 @@ function parseOptionalFilterDate_(value, label, timeZone) {
 
   var parsed = parseDateValue_(value, timeZone);
   if (!parsed) {
-    throw new Error(label + ' không hợp lệ. Vui lòng dùng định dạng YYYY-MM-DD.');
+    throw new Error(label + ' is invalid. Use the YYYY-MM-DD format.');
   }
 
   return parsed;
