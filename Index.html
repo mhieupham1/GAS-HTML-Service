@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bảng điều hành Ticket CNTT &amp; SLA</title>
+  <title>IT Ticket &amp; SLA Dashboard</title>
   <script src="https://www.gstatic.com/charts/loader.js"></script>
   <style>
     :root {
@@ -608,48 +608,48 @@
     <header class="hero">
       <div class="hero__row">
         <div>
-          <p class="eyebrow">Vận hành công nghệ thông tin</p>
-          <h1>Bảng điều hành Ticket CNTT &amp; SLA</h1>
+          <p class="eyebrow">Information Technology Operations</p>
+          <h1>IT Ticket &amp; SLA Dashboard</h1>
           <p class="hero__description">
-            Theo dõi khối lượng yêu cầu, tiến độ xử lý và mức độ đáp ứng cam kết dịch vụ để ưu tiên công việc kịp thời.
+            Track request volume, resolution progress, and service-level compliance to prioritize work effectively.
           </p>
         </div>
-        <div class="update" aria-label="Thời điểm cập nhật dữ liệu gần nhất">
-          <span>Cập nhật gần nhất</span>
-          <strong id="last-updated">Chưa cập nhật</strong>
+        <div class="update" aria-label="Time of the latest data update">
+          <span>Last updated</span>
+          <strong id="last-updated">Not updated yet</strong>
         </div>
       </div>
-      <p class="demo-note" id="demo-note" hidden>Dữ liệu trong bảng điều hành này chỉ phục vụ mục đích minh họa.</p>
+      <p class="demo-note" id="demo-note" hidden>The data in this dashboard is for demonstration purposes only.</p>
     </header>
 
     <main>
       <section class="panel" aria-labelledby="filter-heading">
-        <h2 class="section-heading" id="filter-heading">Bộ lọc báo cáo</h2>
-        <p class="section-copy">Thu hẹp dữ liệu theo khoảng ngày tạo ticket, dịch vụ và mức độ ưu tiên.</p>
+        <h2 class="section-heading" id="filter-heading">Report Filters</h2>
+        <p class="section-copy">Filter data by ticket creation date range, service, and priority.</p>
         <form id="filter-form" class="filters" novalidate>
           <div class="field">
-            <label for="start-date">Ngày bắt đầu</label>
+            <label for="start-date">Start date</label>
             <input id="start-date" name="startDate" type="date" aria-describedby="date-error">
           </div>
           <div class="field">
-            <label for="end-date">Ngày kết thúc</label>
+            <label for="end-date">End date</label>
             <input id="end-date" name="endDate" type="date" aria-describedby="date-error">
           </div>
           <div class="field">
-            <label for="service-filter">Dịch vụ</label>
+            <label for="service-filter">Service</label>
             <select id="service-filter" name="service">
-              <option value="">Tất cả dịch vụ</option>
+              <option value="">All services</option>
             </select>
           </div>
           <div class="field">
-            <label for="priority-filter">Mức độ ưu tiên</label>
+            <label for="priority-filter">Priority</label>
             <select id="priority-filter" name="priority">
-              <option value="">Tất cả mức độ</option>
+              <option value="">All priorities</option>
             </select>
           </div>
           <div class="actions">
-            <button class="button button--primary" id="apply-button" data-action type="submit">Áp dụng</button>
-            <button class="button button--secondary" id="reset-button" data-action type="button">Đặt lại</button>
+            <button class="button button--primary" id="apply-button" data-action type="submit">Apply</button>
+            <button class="button button--secondary" id="reset-button" data-action type="button">Reset</button>
           </div>
         </form>
         <p class="validation-message" id="date-error" role="alert" hidden></p>
@@ -660,107 +660,107 @@
       <section class="panel state loading-state" id="loading-state" aria-labelledby="loading-heading">
         <div class="state__inner">
           <div class="spinner" aria-hidden="true"></div>
-          <h2 id="loading-heading">Đang tải dữ liệu</h2>
-          <p>Vui lòng chờ trong khi bảng điều hành được cập nhật.</p>
+          <h2 id="loading-heading">Loading data</h2>
+          <p>Please wait while the dashboard is being updated.</p>
         </div>
       </section>
 
       <section class="panel state error-state" id="error-state" aria-labelledby="error-heading" hidden>
         <div class="state__inner">
           <div class="state__icon" aria-hidden="true">!</div>
-          <h2 id="error-heading">Không thể tải dữ liệu</h2>
-          <p id="error-message">Đã xảy ra lỗi khi kết nối với nguồn dữ liệu.</p>
-          <button class="button button--primary" id="retry-button" data-action type="button">Thử lại</button>
+          <h2 id="error-heading">Unable to load data</h2>
+          <p id="error-message">An error occurred while connecting to the data source.</p>
+          <button class="button button--primary" id="retry-button" data-action type="button">Try again</button>
         </div>
       </section>
 
       <section class="panel state" id="empty-state" aria-labelledby="empty-heading" hidden>
         <div class="state__inner">
           <div class="state__icon" aria-hidden="true">0</div>
-          <h2 id="empty-heading">Không có dữ liệu phù hợp</h2>
-          <p>Không tìm thấy ticket nào trong điều kiện đã chọn. Hãy điều chỉnh hoặc đặt lại bộ lọc.</p>
-          <button class="button button--secondary" id="empty-reset-button" data-action type="button">Đặt lại bộ lọc</button>
+          <h2 id="empty-heading">No matching data</h2>
+          <p>No tickets match the selected criteria. Adjust or reset the filters.</p>
+          <button class="button button--secondary" id="empty-reset-button" data-action type="button">Reset filters</button>
         </div>
       </section>
 
       <div class="dashboard" id="dashboard-state" hidden>
-        <section class="kpi-grid" aria-label="Các chỉ số tổng quan">
+        <section class="kpi-grid" aria-label="Overview metrics">
           <article class="kpi">
-            <p class="kpi__label">Tổng số ticket</p>
+            <p class="kpi__label">Total tickets</p>
             <p class="kpi__value" id="kpi-total">—</p>
           </article>
           <article class="kpi">
-            <p class="kpi__label">Ticket đang mở</p>
+            <p class="kpi__label">Open tickets</p>
             <p class="kpi__value" id="kpi-open">—</p>
           </article>
           <article class="kpi">
-            <p class="kpi__label">Tỷ lệ đáp ứng SLA</p>
+            <p class="kpi__label">SLA compliance rate</p>
             <p class="kpi__value"><span id="kpi-sla">—</span><span class="kpi__unit" id="kpi-sla-unit"></span></p>
           </article>
           <article class="kpi">
-            <p class="kpi__label">Thời gian xử lý trung bình</p>
+            <p class="kpi__label">Average resolution time</p>
             <p class="kpi__value"><span id="kpi-resolution">—</span><span class="kpi__unit" id="kpi-resolution-unit"></span></p>
           </article>
         </section>
 
-        <section class="chart-grid" aria-label="Biểu đồ phân tích ticket">
+        <section class="chart-grid" aria-label="Ticket analysis charts">
           <article class="panel chart-card chart-card--wide">
-            <h2 class="section-heading">Khối lượng ticket thay đổi thế nào theo ngày?</h2>
-            <p class="section-copy">Số ticket được tạo trong từng ngày của kỳ báo cáo.</p>
-            <div class="chart" id="trend-chart" role="img" aria-label="Biểu đồ đường thể hiện số ticket được tạo theo ngày"></div>
+            <h2 class="section-heading">How does ticket volume change over time?</h2>
+            <p class="section-copy">The number of tickets created each day during the reporting period.</p>
+            <div class="chart" id="trend-chart" role="img" aria-label="Line chart showing tickets created by day"></div>
           </article>
           <article class="panel chart-card">
-            <h2 class="section-heading">Dịch vụ nào phát sinh nhiều ticket nhất?</h2>
-            <p class="section-copy">So sánh tổng số ticket giữa các dịch vụ.</p>
-            <div class="chart" id="service-chart" role="img" aria-label="Biểu đồ thanh so sánh số ticket theo dịch vụ"></div>
+            <h2 class="section-heading">Which services generate the most tickets?</h2>
+            <p class="section-copy">Compare the total number of tickets across services.</p>
+            <div class="chart" id="service-chart" role="img" aria-label="Bar chart comparing tickets by service"></div>
           </article>
           <article class="panel chart-card">
-            <h2 class="section-heading">Ticket đang ở những trạng thái nào?</h2>
-            <p class="section-copy">Phân bố ticket theo từng trạng thái xử lý.</p>
-            <div class="chart" id="status-chart" role="img" aria-label="Biểu đồ cột so sánh số ticket theo trạng thái"></div>
+            <h2 class="section-heading">What are the current ticket statuses?</h2>
+            <p class="section-copy">Distribution of tickets by resolution status.</p>
+            <div class="chart" id="status-chart" role="img" aria-label="Column chart comparing tickets by status"></div>
           </article>
         </section>
 
         <section class="panel" aria-labelledby="urgent-heading">
-          <h2 class="section-heading" id="urgent-heading">Ticket cần ưu tiên xử lý</h2>
-          <p class="section-copy">Các ticket khẩn cấp hoặc ưu tiên cao chưa hoàn tất, sắp xếp theo mức độ và thời gian tạo.</p>
+          <h2 class="section-heading" id="urgent-heading">Tickets Requiring Priority Attention</h2>
+          <p class="section-copy">Unresolved critical or high-priority tickets, sorted by priority and creation time.</p>
           <div class="table-wrap" id="urgent-table-wrap">
             <table>
-              <caption>Danh sách ticket khẩn cấp và ưu tiên cao đang chờ xử lý</caption>
+              <caption>Unresolved critical and high-priority tickets</caption>
               <thead>
                 <tr>
-                  <th scope="col">Mã ticket</th>
-                  <th scope="col">Ngày tạo</th>
-                  <th scope="col">Dịch vụ</th>
-                  <th scope="col">Danh mục</th>
-                  <th scope="col">Ưu tiên</th>
-                  <th scope="col">Trạng thái</th>
-                  <th scope="col">Nhóm phụ trách</th>
+                  <th scope="col">Ticket ID</th>
+                  <th scope="col">Created date</th>
+                  <th scope="col">Service</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Priority</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Assigned team</th>
                 </tr>
               </thead>
               <tbody id="urgent-table-body"></tbody>
             </table>
           </div>
-          <p class="table-empty" id="urgent-empty" hidden>Không có ticket khẩn cấp hoặc ưu tiên cao cần xử lý trong kỳ này.</p>
+          <p class="table-empty" id="urgent-empty" hidden>There are no critical or high-priority tickets requiring attention during this period.</p>
         </section>
       </div>
 
-      <section class="panel report-details" id="report-details" aria-label="Thông tin báo cáo" hidden>
+      <section class="panel report-details" id="report-details" aria-label="Report information" hidden>
         <dl class="detail">
-          <dt>Kỳ báo cáo</dt>
+          <dt>Reporting period</dt>
           <dd id="report-period">—</dd>
         </dl>
         <dl class="detail">
-          <dt>Nguồn dữ liệu</dt>
+          <dt>Data source</dt>
           <dd>Google Sheet “Tickets”</dd>
         </dl>
         <dl class="detail">
-          <dt>Số dòng bị bỏ qua</dt>
+          <dt>Skipped rows</dt>
           <dd id="skipped-rows">—</dd>
         </dl>
         <dl class="detail">
-          <dt>Định nghĩa SLA</dt>
-          <dd>Một ticket đã xử lý được tính là đạt khi cột “sla_met” có giá trị “Yes” (đạt).</dd>
+          <dt>SLA definition</dt>
+          <dd>A resolved ticket is considered SLA-compliant when the “sla_met” column contains “Yes”.</dd>
         </dl>
       </section>
     </main>
@@ -775,18 +775,18 @@
       var chartsFailed = false;
       var chartLoadTimer = null;
       var resizeTimer = null;
-      var numberFormatter = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 });
-      var integerFormatter = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
+      var numberFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+      var integerFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
       var priorityLabels = {
-        Critical: 'Khẩn cấp',
-        High: 'Cao',
-        Medium: 'Trung bình',
-        Low: 'Thấp'
+        Critical: 'Critical',
+        High: 'High',
+        Medium: 'Medium',
+        Low: 'Low'
       };
       var statusLabels = {
-        Open: 'Mở',
-        'In Progress': 'Đang xử lý',
-        Resolved: 'Đã xử lý'
+        Open: 'Open',
+        'In Progress': 'In Progress',
+        Resolved: 'Resolved'
       };
 
       var elements = {};
@@ -856,7 +856,7 @@
         }
 
         try {
-          google.charts.load('current', { packages: ['corechart'], language: 'vi' });
+          google.charts.load('current', { packages: ['corechart'], language: 'en' });
           google.charts.setOnLoadCallback(function () {
             window.clearTimeout(chartLoadTimer);
             chartsReady = true;
@@ -879,7 +879,7 @@
         chartsReady = false;
         chartsFailed = true;
         if (currentPayload && !elements.dashboard.hidden) {
-          showChartMessages('Không thể tải biểu đồ. Các chỉ số và bảng ticket vẫn có thể sử dụng.');
+          showChartMessages('Unable to load charts. The metrics and ticket table are still available.');
         }
       }
 
@@ -895,7 +895,7 @@
       function validateDateRange() {
         var invalid = elements.startDate.value && elements.endDate.value &&
           elements.startDate.value > elements.endDate.value;
-        var message = invalid ? 'Ngày bắt đầu không được sau ngày kết thúc.' : '';
+        var message = invalid ? 'The start date cannot be later than the end date.' : '';
 
         elements.startDate.setCustomValidity(message);
         elements.endDate.setCustomValidity(message);
@@ -928,10 +928,10 @@
 
         showState('loading');
         setActionsDisabled(true);
-        announce('Đang tải dữ liệu bảng điều hành.');
+        announce('Loading dashboard data.');
 
         if (!window.google || !google.script || !google.script.run) {
-          handleFailure({ message: 'Giao diện này cần được mở từ ứng dụng web Google Apps Script.' });
+          handleFailure({ message: 'This interface must be opened from the Google Apps Script web app.' });
           return;
         }
 
@@ -951,7 +951,7 @@
 
           if (payload.meta.filteredCount === 0) {
             showState('empty');
-            announce('Không có ticket phù hợp với bộ lọc đã chọn.');
+            announce('No tickets match the selected filters.');
             return;
           }
 
@@ -961,11 +961,11 @@
           if (chartsReady) {
             drawCharts(payload);
           } else if (chartsFailed) {
-            showChartMessages('Không thể tải biểu đồ. Các chỉ số và bảng ticket vẫn có thể sử dụng.');
+            showChartMessages('Unable to load charts. The metrics and ticket table are still available.');
           } else {
-            showChartMessages('Đang chuẩn bị biểu đồ…');
+            showChartMessages('Preparing charts…');
           }
-          announce('Đã cập nhật bảng điều hành với ' + integerFormatter.format(payload.meta.filteredCount) + ' ticket.');
+          announce('Dashboard updated with ' + integerFormatter.format(payload.meta.filteredCount) + ' tickets.');
         } catch (error) {
           handleFailure(error);
         }
@@ -976,9 +976,9 @@
         setActionsDisabled(false);
         elements.errorMessage.textContent = error && error.message
           ? String(error.message)
-          : 'Đã xảy ra lỗi khi kết nối với nguồn dữ liệu. Vui lòng thử lại.';
+          : 'An error occurred while connecting to the data source. Please try again.';
         showState('error');
-        announce('Không thể tải dữ liệu. ' + elements.errorMessage.textContent);
+        announce('Unable to load data. ' + elements.errorMessage.textContent);
       }
 
       function assertPayload(payload) {
@@ -986,7 +986,7 @@
             !Array.isArray(payload.trends) || !Array.isArray(payload.byService) ||
             !Array.isArray(payload.byStatus) || !Array.isArray(payload.urgentTickets) ||
             !Array.isArray(payload.options.services) || !Array.isArray(payload.options.priorities)) {
-          throw new Error('Dữ liệu máy chủ trả về không đúng định dạng mong đợi.');
+          throw new Error('The server returned data in an unexpected format.');
         }
       }
 
@@ -1006,8 +1006,8 @@
       }
 
       function populateFilterOptions(options) {
-        replaceSelectOptions(elements.service, options.services, 'Tất cả dịch vụ', {});
-        replaceSelectOptions(elements.priority, options.priorities, 'Tất cả mức độ', priorityLabels);
+        replaceSelectOptions(elements.service, options.services, 'All services', {});
+        replaceSelectOptions(elements.priority, options.priorities, 'All priorities', priorityLabels);
       }
 
       function replaceSelectOptions(select, values, allLabel, labelMap) {
@@ -1035,7 +1035,7 @@
         setMetric(elements.kpiTotal, null, kpis.total, '');
         setMetric(elements.kpiOpen, null, kpis.open, '');
         setMetric(elements.kpiSla, elements.kpiSlaUnit, kpis.slaRate, '%');
-        setMetric(elements.kpiResolution, elements.kpiResolutionUnit, kpis.avgResolutionHours, 'giờ');
+        setMetric(elements.kpiResolution, elements.kpiResolutionUnit, kpis.avgResolutionHours, 'hours');
       }
 
       function setMetric(valueElement, unitElement, value, unit) {
@@ -1050,7 +1050,7 @@
         elements.lastUpdated.textContent = formatDateTime(meta.generatedAt);
         elements.reportPeriod.textContent = formatPeriod(meta.periodStart, meta.periodEnd);
         elements.skippedRows.textContent = integerFormatter.format(Number(meta.skippedRows) || 0);
-        elements.demoNote.textContent = 'Dữ liệu trong bảng điều hành này chỉ phục vụ mục đích minh họa.';
+        elements.demoNote.textContent = 'The data in this dashboard is for demonstration purposes only.';
         elements.demoNote.hidden = !meta.isSampleData;
       }
 
@@ -1106,7 +1106,7 @@
           return [formatShortDate(item.label), Number(item.value) || 0];
         });
         var data = google.visualization.arrayToDataTable([
-          ['Ngày', 'Số ticket']
+          ['Date', 'Tickets']
         ].concat(rows));
         var chart = new google.visualization.LineChart(elements.trendChart);
         chart.draw(data, chartOptions({
@@ -1129,7 +1129,7 @@
           return [String(item.label), Number(item.value) || 0];
         });
         var data = google.visualization.arrayToDataTable([
-          ['Dịch vụ', 'Số ticket']
+          ['Service', 'Tickets']
         ].concat(rows));
         var chart = new google.visualization.BarChart(elements.serviceChart);
         chart.draw(data, chartOptions({
@@ -1151,7 +1151,7 @@
           return [statusLabels[item.label] || String(item.label), Number(item.value) || 0];
         });
         var data = google.visualization.arrayToDataTable([
-          ['Trạng thái', 'Số ticket']
+          ['Status', 'Tickets']
         ].concat(rows));
         var chart = new google.visualization.ColumnChart(elements.statusChart);
         chart.draw(data, chartOptions({
@@ -1202,20 +1202,20 @@
 
       function formatShortDate(value) {
         var parts = String(value || '').split('-');
-        return parts.length === 3 ? parts[2] + '/' + parts[1] : String(value || '—');
+        return parts.length === 3 ? parts[1] + '/' + parts[2] : String(value || '—');
       }
 
       function formatDate(value) {
         var parts = String(value || '').split('-');
-        return parts.length === 3 ? parts[2] + '/' + parts[1] + '/' + parts[0] : '—';
+        return parts.length === 3 ? parts[1] + '/' + parts[2] + '/' + parts[0] : '—';
       }
 
       function formatPeriod(start, end) {
         if (!start && !end) {
           return '—';
         }
-        return (start ? formatDate(start) : 'Không giới hạn') + ' – ' +
-          (end ? formatDate(end) : 'Không giới hạn');
+        return (start ? formatDate(start) : 'No limit') + ' – ' +
+          (end ? formatDate(end) : 'No limit');
       }
 
       function formatDateTime(value) {
@@ -1226,7 +1226,7 @@
         if (isNaN(date.getTime())) {
           return '—';
         }
-        return new Intl.DateTimeFormat('vi-VN', {
+        return new Intl.DateTimeFormat('en-US', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
